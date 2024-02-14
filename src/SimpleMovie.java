@@ -21,4 +21,14 @@ public class SimpleMovie
     {
         return "Title: " + title + "\n" + "Actors: " + actors + "\n";
     }
+
+    public String getTitle()
+    {
+        return title;
+    }
+
+    public ArrayList<String> getActors()
+    {
+        return actors;
+    }
 }
