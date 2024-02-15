@@ -255,14 +255,33 @@ public class SixDegreesOfKevinBacon
         return actorList;
     }
 
-    public void findLink()
+    public ArrayList<String> findLink()
     {
-        boolean isCorrectLink = false;
-        while(!isCorrectLink)
+        int totalLinks = moviesLink.size() + actorsLink.size() + 1;
+        int moviesLinkIndex = 0;
+        int actorsLinkIndex = 0;
+        int linkIndex = 1;
+        for(SimpleMovie movieLink1 : moviesLink.get(moviesLinkIndex))
         {
+            if(hasRelationship(movieLink1, actor))
+            {
+                link.set(linkIndex, movieLink1.getTitle());
+                linkIndex++;
+                if(linkIndex != totalLinks)
+                {
 
+                }
+                else
+                {
+                    if(hasRelationship(movieLink1, actor))
+                    {
+                        link.add("Kevin Bacon");
+                        return link;
+                    }
+                }
+            }
         }
-        link.add("Kevin Bacon");
+        return link;
     }
 
     public void findBaconNumber()
