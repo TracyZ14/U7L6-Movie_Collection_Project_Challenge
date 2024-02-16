@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Scanner;
 public class SixDegreesOfKevinBacon
 {
     private String actor;
@@ -22,6 +23,59 @@ public class SixDegreesOfKevinBacon
         this.baconNumber = 0;
     }
 
+    public SixDegreesOfKevinBacon()
+    {
+        this.actor = "";
+        this.movies = MovieDatabaseBuilder.getMovieDB("src/movie_data");
+        this.moviesSearched = new ArrayList<SimpleMovie>();
+        this.actorsSearched = new ArrayList<String>();
+        this.link = new ArrayList<String>();
+        this.moviesLink = new ArrayList<ArrayList<SimpleMovie>>();
+        this.actorsLink = new ArrayList<ArrayList<String>>();
+        this.baconNumber = 0;
+    }
+
+    public String findActor(String name)
+    {
+        Scanner scan = new Scanner(System.in);
+        ArrayList<String> correctActor = new ArrayList<String>();
+        name = name.toLowerCase();
+        for(int i = 0; i < movies.size(); i++)
+        {
+            ArrayList<String> actors = movies.get(i).getActors();
+            for(String actor : actors)
+            {
+                if(actor.toLowerCase().contains(name))
+                {
+                    correctActor.add(actor);
+                }
+            }
+        }
+        removeRepetitiveActors(correctActor);
+        for(int i = 1; i < correctActor.size(); i++)
+        {
+            String tempActor = correctActor.get(i);
+            while((i > 0) && (tempActor.compareTo(correctActor.get(i - 1)) < 0))
+            {
+                correctActor.set(i, correctActor.get(i - 1));
+                i--;
+            }
+            correctActor.set(i, tempActor);
+        }
+        for(int i = 0; i < correctActor.size(); i++)
+        {
+            String actorName = correctActor.get(i);
+            int choiceNum = i + 1;
+            System.out.println("" + choiceNum + ". " + actorName);
+        }
+        System.out.println("Which actor do you want to pick?");
+        System.out.print("Enter number: ");
+        int choice = scan.nextInt();
+        scan.nextLine();
+        String actorSelected = correctActor.get(choice - 1);
+        return actorSelected;
+    }
+
     public void printAnswer()
     {
         String answer = "";
@@ -42,9 +96,11 @@ public class SixDegreesOfKevinBacon
         link.add(actor);
         ArrayList<String> movieActors = new ArrayList<String>();
         movieActors.add("Kevin Bacon");
-        ArrayList<SimpleMovie> kevinBaconMovies = organizeMovies(moviesOf(movieActors));
+        System.out.println("Test");
+        ArrayList<SimpleMovie> kevinBaconMovies = moviesOf(movieActors);
+        System.out.println("Test2");
         movieActors.set(0, actor);
-        ArrayList<SimpleMovie> actorMovies = organizeMovies(moviesOf(movieActors));
+        ArrayList<SimpleMovie> actorMovies = moviesOf(movieActors);
         moviesLink.add(actorMovies);
         moviesSearched = actorMovies;
         actorsSearched = movieActors;
@@ -56,7 +112,7 @@ public class SixDegreesOfKevinBacon
             movieActors = removeActors(movieActors, actorsSearched);
             actorsLink.add(movieActors);
             actorsSearched = addActors(actorsSearched, movieActors);
-            actorMovies = organizeMovies(moviesOf(movieActors));
+            actorMovies = moviesOf(movieActors);
             actorMovies = removeRepetitiveMovies(actorMovies);
             actorMovies = removeMovies(actorMovies, moviesSearched);
             moviesLink.add(actorMovies);
@@ -111,22 +167,6 @@ public class SixDegreesOfKevinBacon
             }
         }
         return allActors;
-    }
-
-    public ArrayList<SimpleMovie> organizeMovies(ArrayList<SimpleMovie> movieList)
-    {
-        for(int i = 1; i < movieList.size(); i++)
-        {
-            SimpleMovie tempMovie = movieList.get(i);
-            String tempTitle = tempMovie.getTitle();
-            while((i > 0) && (tempTitle.compareTo(movieList.get(i - 1).getTitle()) < 0))
-            {
-                movieList.set(i, movieList.get(i - 1));
-                i--;
-            }
-            movieList.set(i, tempMovie);
-        }
-        return movieList;
     }
 
     public ArrayList<String> organizeActors(ArrayList<String> actorList)
@@ -257,23 +297,137 @@ public class SixDegreesOfKevinBacon
 
     public ArrayList<String> findLink()
     {
-        int totalLinks = moviesLink.size() + actorsLink.size() + 1;
-        int moviesLinkIndex = 0;
-        int actorsLinkIndex = 0;
-        int linkIndex = 1;
-        for(SimpleMovie movieLink1 : moviesLink.get(moviesLinkIndex))
+        int totalLinks = moviesLink.size() + actorsLink.size();
+        for(SimpleMovie movieLink1 : moviesLink.get(0))
         {
             if(hasRelationship(movieLink1, actor))
             {
-                link.set(linkIndex, movieLink1.getTitle());
-                linkIndex++;
-                if(linkIndex != totalLinks)
+                link.set(1, movieLink1.getTitle());
+                if(1 != totalLinks)
                 {
-
+                    for(String actorLink1 : actorsLink.get(0))
+                    {
+                        if(hasRelationship(movieLink1, actorLink1))
+                        {
+                            link.set(2, actorLink1);
+                            for(SimpleMovie movieLink2 : moviesLink.get(1))
+                            {
+                                if(hasRelationship(movieLink2, actorLink1))
+                                {
+                                    link.set(3, movieLink2.getTitle());
+                                    if(3 != totalLinks)
+                                    {
+                                        for(String actorLink2 : actorsLink.get(1))
+                                        {
+                                            if(hasRelationship(movieLink2, actorLink2))
+                                            {
+                                                link.set(4, actorLink2);
+                                                for(SimpleMovie movieLink3 : moviesLink.get(2))
+                                                {
+                                                    if(hasRelationship(movieLink3, actorLink2))
+                                                    {
+                                                        link.set(5, movieLink3.getTitle());
+                                                        if(5 != totalLinks)
+                                                        {
+                                                            for(String actorLink3 : actorsLink.get(2))
+                                                            {
+                                                                if(hasRelationship(movieLink3, actorLink3))
+                                                                {
+                                                                    link.set(6, actorLink3);
+                                                                    for(SimpleMovie movieLink4 : moviesLink.get(3))
+                                                                    {
+                                                                        if(hasRelationship(movieLink4, actorLink3))
+                                                                        {
+                                                                            link.set(7, movieLink4.getTitle());
+                                                                            if(7 != totalLinks)
+                                                                            {
+                                                                                for(String actorLink4 : actorsLink.get(3))
+                                                                                {
+                                                                                    if(hasRelationship(movieLink4, actorLink4))
+                                                                                    {
+                                                                                        link.set(8, actorLink4);
+                                                                                        for(SimpleMovie movieLink5 : moviesLink.get(4))
+                                                                                        {
+                                                                                            if(hasRelationship(movieLink5, actorLink4))
+                                                                                            {
+                                                                                                link.set(9, movieLink5.getTitle());
+                                                                                                if(9 != totalLinks)
+                                                                                                {
+                                                                                                    for(String actorLink5 : actorsLink.get(4))
+                                                                                                    {
+                                                                                                        if(hasRelationship(movieLink5, actorLink5))
+                                                                                                        {
+                                                                                                            link.set(10, actorLink5);
+                                                                                                            for(SimpleMovie movieLink6 : moviesLink.get(5))
+                                                                                                            {
+                                                                                                                if(hasRelationship(movieLink6, actorLink5))
+                                                                                                                {
+                                                                                                                    link.set(11, movieLink6.getTitle());
+                                                                                                                    if(hasRelationship(movieLink6, "Kevin Bacon"))
+                                                                                                                    {
+                                                                                                                        link.add("Kevin Bacon");
+                                                                                                                        return link;
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                                else
+                                                                                                {
+                                                                                                    if(hasRelationship(movieLink5, "Kevin Bacon"));
+                                                                                                    {
+                                                                                                        link.add("Kevin Bacon");
+                                                                                                        return link;
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                if(hasRelationship(movieLink4, "Kevin Bacon"))
+                                                                                {
+                                                                                    link.add("Kevin Bacon");
+                                                                                    return link;
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            if(hasRelationship(movieLink3, "Kevin Bacon"))
+                                                            {
+                                                                link.add("Kevin Bacon");
+                                                                return link;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if(hasRelationship(movieLink2, "Kevin Bacon"))
+                                        {
+                                            link.add("Kevin Bacon");
+                                            return link;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
                 else
                 {
-                    if(hasRelationship(movieLink1, actor))
+                    if(hasRelationship(movieLink1, "Kevin Bacon"))
                     {
                         link.add("Kevin Bacon");
                         return link;
@@ -281,6 +435,7 @@ public class SixDegreesOfKevinBacon
                 }
             }
         }
+        link.add("Kevin Bacon");
         return link;
     }
 
